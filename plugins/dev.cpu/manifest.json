@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "dev.cpu",
+  "name": "CPU",
+  "version": "1.0.0",
+  "author": "dev",
+  "description": "Realtime CPU usage in the bar with a top-processes popup",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "CPU",
+    "description": "Realtime CPU usage in the bar with a top-processes popup",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "interval": 1,
+      "groupByName": true,
+      "topCount": 5
+    },
+    "schema": [
+      { "key": "interval", "type": "number", "label": "Refresh interval (seconds)" },
+      { "key": "groupByName", "type": "boolean", "label": "Group processes by name" },
+      { "key": "topCount", "type": "number", "label": "Processes to list" }
+    ]
+  }
+}

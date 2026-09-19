@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "dev.disk",
+  "name": "Disk",
+  "version": "1.0.0",
+  "author": "dev",
+  "description": "Realtime disk usage in the bar with filesystems and top I/O processes popup",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Disk",
+    "description": "Realtime disk usage in the bar with filesystems and top I/O processes popup",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "interval": 1,
+      "mount": "/",
+      "groupByName": true,
+      "topCount": 5
+    },
+    "schema": [
+      { "key": "interval", "type": "number", "label": "Refresh interval (seconds)" },
+      { "key": "mount", "type": "string", "label": "Mount point shown in the bar" },
+      { "key": "groupByName", "type": "boolean", "label": "Group processes by name" },
+      { "key": "topCount", "type": "number", "label": "Processes to list" }
+    ]
+  }
+}

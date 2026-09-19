@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Prints memory stats as key=value lines (kB). With --top N it appends the N
+# biggest RAM users as "proc=<rssKB>\t<count>\t<name>"; --group merges
+# processes that share a command name (browsers, agents, etc.).
+set -euo pipefail
+
+top=0
+group=0
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --top) top="${2:-5}"; shift 2 ;;
+    --group) group=1; shift ;;
+    *) shift ;;
+  esac
+done
+
+awk '
+  /^MemTotal:/     { t = $2 }
+  /^MemAvailable:/ { a = $2 }
+  /^SwapTotal:/    { st = $2 }
+  /^SwapFree:/     { sf = $2 }
+  END {
+    u = t - a
+    printf "total=%d\navail=%d\nused=%d\npct=%d\nswaptotal=%d\nswapused=%d\n",
+      t, a, u, (t > 0 ? int(u * 100 / t + 0.5) : 0), st, st - sf
+  }
+' /proc/meminfo
+
+if (( top > 0 )); then
+  # comm is at most 15 chars but may contain spaces, so take everything
+  # after the first field as the name rather than $2.
+  ps -eo rss=,comm= | awk -v group="$group" '
+    {
+      rss = $1
+      name = $0
+      sub(/^ *[0-9]+ +/, "", name)
+      if (rss <= 0 || name == "") next
+      if (group) { total[name] += rss; count[name]++ }
+      else       { key = NR SUBSEP name; total[key] = rss; count[key] = 1; label[key] = name }
+    }
+    END {
+      for (k in total) printf "%d\t%d\t%s\n", total[k], count[k], (group ? k : label[k])
+    }
+  ' | sort -rn | head -n "$top" | sed 's/^/proc=/'
+fi

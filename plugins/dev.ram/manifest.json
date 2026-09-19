@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "dev.ram",
+  "name": "RAM",
+  "version": "1.0.0",
+  "author": "dev",
+  "description": "Realtime memory usage in the bar with a top-processes popup",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "RAM",
+    "description": "Realtime memory usage in the bar with a top-processes popup",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "interval": 1,
+      "showPercent": true,
+      "groupByName": true,
+      "topCount": 5
+    },
+    "schema": [
+      { "key": "interval", "type": "number", "label": "Refresh interval (seconds)" },
+      { "key": "showPercent", "type": "boolean", "label": "Show percentage in bar" },
+      { "key": "groupByName", "type": "boolean", "label": "Group processes by name" },
+      { "key": "topCount", "type": "number", "label": "Processes to list" }
+    ]
+  }
+}

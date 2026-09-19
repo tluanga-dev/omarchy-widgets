@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "dev.screenshot",
+  "name": "Screenshot",
+  "version": "1.0.0",
+  "author": "dev",
+  "description": "Screenshot menu: capture an area, window, or screen to the clipboard and a folder",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Screenshot",
+    "description": "Screenshot menu: capture an area, window, or screen to the clipboard and a folder",
+    "category": "Tools",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "directory": "~/Documents/Screenshots"
+    },
+    "schema": [
+      { "key": "directory", "type": "string", "label": "Save screenshots to" }
+    ]
+  }
+}
