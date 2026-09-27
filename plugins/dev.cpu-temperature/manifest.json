@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "dev.cpu-temperature",
+  "name": "CPU Temperature",
+  "version": "1.0.0",
+  "author": "dev",
+  "description": "Live CPU temperature with package/core readings and recent history",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "Panel.qml" },
+  "barWidget": {
+    "displayName": "CPU Temperature",
+    "description": "CPU temperature updated every second",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": { "interval": 1, "warningTemperature": 80 },
+    "schema": [
+      { "key": "interval", "type": "number", "label": "Refresh interval (seconds)" },
+      { "key": "warningTemperature", "type": "number", "label": "Highlight at temperature (°C)" }
+    ]
+  }
+}

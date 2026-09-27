@@ -8,6 +8,7 @@ Custom status-bar widgets for the [Omarchy](https://omarchy.org/) shell
 |---|---|---|
 | `dev.screenshot` | Camera icon with a popup menu: **Select area**, **Window**, **Full screen** (each copies to the clipboard *and* saves a PNG), **Copy text** (OCR), **Open folder** | Start an area capture immediately |
 | `dev.cpu` | Live CPU % pill; popup shows load, clock, temperature and the top CPU processes | Open `btop` |
+| `dev.cpu-temperature` | Live CPU temperature in °C; popup shows recent history, session min/max and package/core sensors | Open `btop` |
 | `dev.ram` | Live memory usage; popup shows totals and the top memory processes | Open `btop` |
 | `dev.disk` | Live disk usage for a mount; popup lists filesystems and top I/O processes | Open `btop` |
 | `dev.cursor` | Cursor highlight and live magnifier; popup has enable, magnify, locate, preferences, and stop controls | Toggle highlight (middle-click: magnifier) |
@@ -22,6 +23,7 @@ cd omarchy-widgets
 ./install.sh              # all widgets
 ./install.sh dev.screenshot   # or just one
 ./install.sh dev.cursor       # builds the Rust helper and installs the cursor widget
+./install.sh dev.cpu-temperature # CPU thermometer, refreshed every second
 ```
 
 `install.sh` copies the plugin directories into `~/.config/omarchy/plugins/`
@@ -62,6 +64,13 @@ omarchy bar move dev.cursor --section center --after dev.screenshot
 <img src="docs/cursor-preferences.png" alt="Omarchy Cursor native appearance preferences and click highlight" width="440">
 <img src="docs/cursor-widget.png" alt="Cursor top-bar popup with highlight, magnifier, locate, and preferences controls" width="320">
 
+The separate [CPU Temperature widget](plugins/dev.cpu-temperature/README.md)
+reads the CPU package/die sensor once per second, with a popup for recent history
+and individual core readings. Put it beside CPU usage with
+`omarchy bar move dev.cpu-temperature --section right --after dev.cpu`.
+
+<img src="docs/cpu-temperature-widget.png" alt="Live CPU temperature popup with a history graph and per-core readings" width="340">
+
 ## Settings
 
 Each widget's `manifest.json` declares its settings; they show up in the
@@ -70,6 +79,7 @@ bar's widget settings UI and can also be set inline in `shell.json`:
 ```jsonc
 { "id": "dev.screenshot", "directory": "~/Documents/Screenshots" }
 { "id": "dev.cpu",  "interval": 1, "groupByName": true, "topCount": 5 }
+{ "id": "dev.cpu-temperature", "interval": 1, "warningTemperature": 80 }
 { "id": "dev.ram",  "interval": 1, "showPercent": true, "groupByName": true, "topCount": 5 }
 { "id": "dev.disk", "interval": 1, "mount": "/", "groupByName": true, "topCount": 5 }
 { "id": "dev.cursor", "autoStart": true }
@@ -81,6 +91,7 @@ bar's widget settings UI and can also be set inline in `shell.json`:
 - `dev.screenshot` uses Omarchy's own capture tools (`omarchy-capture-screenshot`,
   `omarchy-capture-text`, `grim`, `slurp`, `wl-copy`) — all ship with Omarchy
 - `jq` (for `install.sh` to edit `shell.json`; ships with Omarchy)
+- `dev.cpu-temperature`: Python 3 and a readable CPU sensor in Linux sysfs.
 - `dev.cursor`: Rust 1.95+, Omarchy 4 with Hyprland 0.56 Lua configuration, a
   systemd user session, and OpenGL/Wayland. Other widgets do not require Rust.
 

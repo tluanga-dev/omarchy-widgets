@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+"""Read CPU-specific Linux sensors; never substitute a GPU/ACPI temperature.
+
+Intel: hottest package, or hottest core when package readings are absent.
+AMD: Tdie when available, otherwise Tctl (explicitly labeled control temperature).
+No writes, external commands, root access, or third-party Python modules.
+"""
+import argparse
+import json
+from pathlib import Path
+import re
+
+CPU_DRIVERS = {"coretemp", "k10temp", "zenpower", "k8temp", "via_cputemp",
+               "cpu_thermal", "cpu-thermal"}
+CPU_ZONES = {"x86_pkg_temp", "cpu-thermal", "cpu_thermal"}
+
+
+def read(path):
+    try:
+        return path.read_text().strip()
+    except (OSError, UnicodeError):
+        return ""
+
+
+def temperature(path):
+    try:
+        value = int(read(path)) / 1000
+        return round(value, 1) if -273.15 <= value <= 250 else None
+    except ValueError:
+        return None
+
+
+def number(path):
+    match = re.search(r"temp(\d+)_", path.name)
+    return int(match[1]) if match else 0
+
+
+def sample(sysfs=Path("/sys")):
+    sensors, candidates = [], []
+    for device in sorted((sysfs / "class/hwmon").glob("hwmon*")):
+        driver = read(device / "name")
+        if driver not in CPU_DRIVERS:
+            continue
+        readings = []
+        for path in sorted(device.glob("temp*_input"), key=number):
+            stem = path.name.removesuffix("_input")
+            if read(device / f"{stem}_fault") == "1" or read(device / f"{stem}_enable") == "0":
+                continue
+            value = temperature(path)
+            if value is None:
+                continue
+            readings.append({
+                "id": f"{device.name}/{stem}",
+                "label": read(device / f"{stem}_label") or f"CPU sensor {number(path)}",
+                "driver": driver,
+                "celsius": value,
+                "critical": temperature(device / f"{stem}_crit"),
+            })
+        if not readings:
+            continue
+        sensors.extend(readings)
+        packages = [s for s in readings if s["label"].lower().startswith(("package", "physical id"))]
+        die = [s for s in readings if s["label"].lower() == "tdie"]
+        control = [s for s in readings if s["label"].lower() == "tctl"]
+        preferred = packages or die or control or readings
+        selected = max(preferred, key=lambda s: s["celsius"])
+        source = "CPU package" if packages else "CPU die" if die else "CPU control" if control else "Hottest CPU sensor"
+        candidates.append((selected, source))
+
+    # Some kernels expose CPU temperature only through the thermal subsystem.
+    # Generic acpitz, Wi-Fi, GPU, and motherboard zones are deliberately excluded.
+    if not candidates:
+        for zone in sorted((sysfs / "class/thermal").glob("thermal_zone*")):
+            kind = read(zone / "type")
+            if kind not in CPU_ZONES:
+                continue
+            value = temperature(zone / "temp")
+            if value is None:
+                continue
+            limits = [temperature(p.with_name(p.name.removesuffix("_type") + "_temp"))
+                      for p in zone.glob("trip_point_*_type") if read(p) == "critical"]
+            limits = [v for v in limits if v is not None]
+            sensor = {"id": zone.name, "label": kind, "driver": "thermal",
+                      "celsius": value, "critical": min(limits) if limits else None}
+            sensors.append(sensor)
+            candidates.append((sensor, "CPU thermal zone"))
+
+    if not candidates:
+        return {"available": False, "temperature": None, "sensors": [],
+                "error": "No readable CPU temperature sensor is exposed by this kernel."}
+    selected, source = max(candidates, key=lambda pair: pair[0]["celsius"])
+    return {"available": True, "temperature": selected["celsius"],
+            "source": source, "label": selected["label"], "driver": selected["driver"],
+            "critical": selected["critical"], "sensors": sensors, "error": None}
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--sysfs-root", type=Path, default=Path("/sys"),
+                        help="alternate sysfs tree for fixture checks")
+    print(json.dumps(sample(parser.parse_args().sysfs_root)))
