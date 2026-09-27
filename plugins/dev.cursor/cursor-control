@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Small adapter between the shell widget and the private Rust control socket.
+set -euo pipefail
+app="$HOME/.local/bin/omarchy-cursor"
+action="${1:-status}"
+if [[ ! -x "$app" ]]; then
+  printf '%s\n' '{"running":false,"enabled":false,"magnifying":false,"error":"Install the cursor helper with ./install.sh dev.cursor"}'
+  exit 1
+fi
+case "$action" in
+  status)
+    "$app" status 2>/dev/null || printf '%s\n' '{"running":false,"enabled":false,"magnifying":false}'
+    ;;
+  start) "$app" start; "$app" status ;;
+  toggle)
+    if "$app" status >/dev/null 2>&1; then "$app" toggle
+    else "$app" start; "$app" status
+    fi
+    ;;
+  magnify|locate)
+    "$app" start
+    "$app" "$action"
+    ;;
+  quit) "$app" quit ;;
+  *) printf 'Unknown cursor action: %s\n' "$action" >&2; exit 2 ;;
+esac

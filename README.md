@@ -10,6 +10,7 @@ Custom status-bar widgets for the [Omarchy](https://omarchy.org/) shell
 | `dev.cpu` | Live CPU % pill; popup shows load, clock, temperature and the top CPU processes | Open `btop` |
 | `dev.ram` | Live memory usage; popup shows totals and the top memory processes | Open `btop` |
 | `dev.disk` | Live disk usage for a mount; popup lists filesystems and top I/O processes | Open `btop` |
+| `dev.cursor` | Cursor highlight and live magnifier; popup has enable, magnify, locate, preferences, and stop controls | Toggle highlight (middle-click: magnifier) |
 
 All popups support keyboard navigation (arrows / Enter / Esc / Tab between panels).
 
@@ -20,6 +21,7 @@ git clone git@github.com:tluanga-dev/omarchy-widgets.git
 cd omarchy-widgets
 ./install.sh              # all widgets
 ./install.sh dev.screenshot   # or just one
+./install.sh dev.cursor       # builds the Rust helper and installs the cursor widget
 ```
 
 `install.sh` copies the plugin directories into `~/.config/omarchy/plugins/`
@@ -29,6 +31,26 @@ and appends any widget not already in your bar to the right section of
 ```bash
 omarchy bar move dev.screenshot --section right
 ```
+
+The cursor widget also builds and installs the Rust app in
+[`apps/omarchy-cursor`](apps/omarchy-cursor). It uses a click-through Wayland
+overlay, with circle/squircle/rhombus/rectangle highlights, click animations,
+custom colors and glow, idle hiding, and a live 1.5–10× magnifier. Its preferences
+window includes a preview and adjustable shortcuts:
+
+| Shortcut | Cursor action |
+|---|---|
+| Super + Alt + C | Toggle highlight |
+| Super + Alt + M | Magnifier (toggle, or hold mode in preferences) |
+| Super + Alt + L | Locate the pointer |
+
+The bar widget starts the helper when loaded; **Stop cursor helper** stops it
+until you start it again or the widget reloads. Set `autoStart: false` to start
+manually. The standalone tray icon is disabled when installed as a widget.
+The lens appears beside the pointer to avoid capturing itself. See the
+[app README](apps/omarchy-cursor/README.md) for details and removal instructions.
+
+<img src="docs/cursor-preferences.png" alt="Omarchy Cursor native appearance preferences and click highlight" width="440">
 
 ## Settings
 
@@ -40,6 +62,7 @@ bar's widget settings UI and can also be set inline in `shell.json`:
 { "id": "dev.cpu",  "interval": 1, "groupByName": true, "topCount": 5 }
 { "id": "dev.ram",  "interval": 1, "showPercent": true, "groupByName": true, "topCount": 5 }
 { "id": "dev.disk", "interval": 1, "mount": "/", "groupByName": true, "topCount": 5 }
+{ "id": "dev.cursor", "autoStart": true }
 ```
 
 ## Requirements
@@ -48,6 +71,8 @@ bar's widget settings UI and can also be set inline in `shell.json`:
 - `dev.screenshot` uses Omarchy's own capture tools (`omarchy-capture-screenshot`,
   `omarchy-capture-text`, `grim`, `slurp`, `wl-copy`) — all ship with Omarchy
 - `jq` (for `install.sh` to edit `shell.json`; ships with Omarchy)
+- `dev.cursor`: Rust 1.95+, Omarchy 4 with Hyprland 0.56 Lua configuration, a
+  systemd user session, and OpenGL/Wayland. Other widgets do not require Rust.
 
 ## Development notes
 

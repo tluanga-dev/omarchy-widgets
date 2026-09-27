@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "dev.cursor",
+  "name": "Cursor",
+  "version": "1.0.0",
+  "author": "dev",
+  "description": "Cursor highlights, click animations, and a live magnifier powered by Rust",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "Panel.qml" },
+  "barWidget": {
+    "displayName": "Cursor",
+    "description": "Highlight, magnify, and locate your mouse pointer",
+    "category": "Tools",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": { "autoStart": true },
+    "schema": [
+      { "key": "autoStart", "type": "boolean", "label": "Start cursor helper with the widget" }
+    ]
+  }
+}
