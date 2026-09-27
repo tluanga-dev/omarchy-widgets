@@ -8,7 +8,10 @@ This is an independent Linux implementation, with its own name, icon, and code.
 ## Use
 
 From this repository, install the bar widget with `./install.sh dev.cursor`.
-Its popup provides the main controls; **Preferences** opens the full editor.
+Click the labeled **Cursor** button in the top bar to open its controls;
+**Preferences** opens the full editor. New installations use the center section.
+For an existing installation, move it beside Screenshot with
+`omarchy bar move dev.cursor --section center --after dev.screenshot`.
 This mode hides the standalone tray icon. The widget starts the user service
 when loaded unless its `autoStart` setting is false.
 

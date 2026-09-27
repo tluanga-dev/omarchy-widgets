@@ -76,11 +76,11 @@ Panel {
 
   implicitWidth: button.implicitWidth
   implicitHeight: button.implicitHeight
-  BarIconButton {
+  WidgetButton {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: "󰇀"
+    text: button.vertical ? "󰇀" : "󰇀 Cursor"
     active: root.active || root.cursorState.magnifying === true
     activeColor: Color.accent
     dimmed: !root.cursorState.running

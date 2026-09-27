@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Install (or update) these widgets into the Omarchy user plugin directory
-# and add any that are missing to the bar's right section.
+# and add missing widgets to their manifest's default bar section.
 #
 #   ./install.sh            # install all widgets
 #   ./install.sh dev.cpu    # install only the named widget(s)
@@ -47,9 +47,10 @@ if [[ -f "$shell_json" ]] && command -v jq >/dev/null; then
         backup_done=true
       fi
       tmp="$(mktemp "${shell_json}.tmp.XXXXXX")"
-      jq --arg id "$w" '.bar.layout.right = ((.bar.layout.right // []) + [{id: $id}])' "$shell_json" > "$tmp"
+      section="$(jq -r '.barWidget.defaultSection // "right"' "$here/plugins/$w/manifest.json")"
+      jq --arg id "$w" --arg section "$section" '.bar.layout[$section] = ((.bar.layout[$section] // []) + [{id: $id}])' "$shell_json" > "$tmp"
       mv "$tmp" "$shell_json"
-      echo "added $w to the bar (right section)"
+      echo "added $w to the bar ($section section)"
     fi
   done
 else

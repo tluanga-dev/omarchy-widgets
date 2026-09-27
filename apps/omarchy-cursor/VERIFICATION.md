@@ -39,13 +39,21 @@ by side (2048×1152 logical pixels each). Date: 2026-09-27.
   restored and Hyprland configuration remained clean.
 - Repeated widget installation retained a single `dev.cursor` bar entry and
   restarted the helper with the updated binary.
+- After unlocking, verified the labeled **Cursor** button in the top-center
+  bar beside Screenshot. A virtual-pointer left click opened the themed popup;
+  right-click toggled highlighting. Arrow/Enter navigation toggled highlighting
+  and the magnifier, whose capture frame count increased. Escape dismissed it.
+  Clicking **Preferences** opened the native editor. The captured popup is
+  [`docs/cursor-widget.png`](../../docs/cursor-widget.png).
+- Cleared the shell's QML component cache with `omarchy restart shell` after
+  updating the button. The new label and popup rendered without QML errors.
+  Transient compositor errors now clear after the next successful refresh.
 
 ## Limits
 
-The desktop locked during the final widget review. The popup's final visual
-layout and mouse/keyboard actions, all four display corners, idle hiding,
-attention pulses, and hold-mode release have not completed an end-to-end
-desktop test. `scripts/live-smoke.py` contains the repeatable display/shortcut/
+All four display corners, idle hiding, attention pulses, middle-click on the
+bar, and hold-mode release have not completed an end-to-end desktop test.
+`scripts/live-smoke.py` contains the repeatable display/shortcut/
 idle/hold checks and refuses to run on a locked desktop or with preferences open.
 
 Hot-plugging, physical display rotation, HDR, full logout/reboot startup,

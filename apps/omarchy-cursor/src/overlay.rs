@@ -179,8 +179,9 @@ pub fn run() -> Result<()> {
             }
         }
         if state.refresh || Instant::now() >= next_monitors {
-            if let Err(e) = state.sync_outputs(&qh) {
-                state.last_error = Some(e.to_string());
+            match state.sync_outputs(&qh) {
+                Ok(()) => state.last_error = None,
+                Err(e) => state.last_error = Some(e.to_string()),
             }
             next_monitors = Instant::now() + Duration::from_secs(2);
             state.refresh = false;

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "dev.cursor",
   "name": "Cursor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "dev",
   "description": "Cursor highlights, click animations, and a live magnifier powered by Rust",
   "kinds": ["bar-widget"],
@@ -12,7 +12,7 @@
     "description": "Highlight, magnify, and locate your mouse pointer",
     "category": "Tools",
     "allowMultiple": false,
-    "defaultSection": "right",
+    "defaultSection": "center",
     "defaults": { "autoStart": true },
     "schema": [
       { "key": "autoStart", "type": "boolean", "label": "Start cursor helper with the widget" }

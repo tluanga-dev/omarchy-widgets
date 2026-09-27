@@ -25,8 +25,9 @@ cd omarchy-widgets
 ```
 
 `install.sh` copies the plugin directories into `~/.config/omarchy/plugins/`
-and appends any widget not already in your bar to the right section of
-`~/.config/omarchy/shell.json`. Move them around with:
+and appends any widget not already in your bar to its default section in
+`~/.config/omarchy/shell.json` (Cursor: center; other widgets: right).
+Move them around with:
 
 ```bash
 omarchy bar move dev.screenshot --section right
@@ -50,7 +51,16 @@ manually. The standalone tray icon is disabled when installed as a widget.
 The lens appears beside the pointer to avoid capturing itself. See the
 [app README](apps/omarchy-cursor/README.md) for details and removal instructions.
 
+Click **Cursor** in the top bar to open its popup, right-click to toggle the
+highlight, or middle-click to toggle the magnifier. To move an existing
+installation beside the screenshot button:
+
+```bash
+omarchy bar move dev.cursor --section center --after dev.screenshot
+```
+
 <img src="docs/cursor-preferences.png" alt="Omarchy Cursor native appearance preferences and click highlight" width="440">
+<img src="docs/cursor-widget.png" alt="Cursor top-bar popup with highlight, magnifier, locate, and preferences controls" width="320">
 
 ## Settings
 
